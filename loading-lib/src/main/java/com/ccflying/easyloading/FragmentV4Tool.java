@@ -35,7 +35,20 @@ public class FragmentV4Tool {
      */
     public static View showLoading(Fragment fragment, int layoutId) {
         View view = LayoutInflater.from(fragment.getActivity()).inflate(layoutId, null);
-        showLoading(fragment, view);
+        showLoading(fragment, view, false);
+        return view;
+    }
+
+    /**
+     * show loading
+     *
+     * @param fragment
+     * @param layoutId
+     * @return
+     */
+    public static View showLoading(Fragment fragment, int layoutId, boolean dimBackground) {
+        View view = LayoutInflater.from(fragment.getActivity()).inflate(layoutId, null);
+        showLoading(fragment, view, dimBackground);
         return view;
     }
 
@@ -47,23 +60,26 @@ public class FragmentV4Tool {
      * @return
      */
     public static boolean showLoading(Fragment fragment, View view) {
-        boolean viewIsGroup = false;
-        try {
-            ViewGroup vg = (ViewGroup) view;
-            viewIsGroup = true;
-        } catch (Exception e) {
+        return showLoading(fragment, view, false);
+    }
+
+    /**
+     * show loading
+     *
+     * @param fragment
+     * @param view
+     * @return
+     */
+    public static boolean showLoading(Fragment fragment, View view, boolean dimBackground) {
+        FrameLayout layout = new FrameLayout(fragment.getActivity());
+        FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(-2, -2);
+        lps.gravity = Gravity.CENTER;
+        layout.addView(view, lps);
+        if (dimBackground) {
+            layout.setBackgroundColor(0x88000000);
         }
-        if (viewIsGroup) {
-            view.setOnClickListener(listener);
-            return showView(fragment, view, -1, -1, Gravity.CENTER);
-        } else {
-            FrameLayout layout = new FrameLayout(fragment.getActivity());
-            FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(-2, -2);
-            lps.gravity = Gravity.CENTER;
-            layout.addView(view, lps);
-            layout.setOnClickListener(listener);
-            return showView(fragment, layout, -1, -1, Gravity.CENTER);
-        }
+        layout.setOnClickListener(listener);
+        return showView(fragment, layout, -1, -1, Gravity.CENTER);
     }
 
     /**

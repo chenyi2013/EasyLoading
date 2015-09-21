@@ -12,6 +12,10 @@ import android.widget.FrameLayout;
  * Created by youku on 15/9/14.
  */
 public abstract class LoadingSupportFragment extends Fragment {
+
+    public LoadingSupportFragment() {
+    }
+
     private FrameLayout mContentView;
 
     protected abstract int contentViewLayoutId();

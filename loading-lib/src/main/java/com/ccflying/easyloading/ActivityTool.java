@@ -36,7 +36,20 @@ public class ActivityTool {
      */
     public static View showLoading(Activity activity, int layoutId) {
         View view = LayoutInflater.from(activity).inflate(layoutId, null);
-        showLoading(activity, view);
+        showLoading(activity, view, true);
+        return view;
+    }
+
+    /**
+     * add loading view to activity
+     *
+     * @param activity
+     * @param layoutId
+     * @return
+     */
+    public static View showLoading(Activity activity, int layoutId, boolean dimBackground) {
+        View view = LayoutInflater.from(activity).inflate(layoutId, null);
+        showLoading(activity, view, dimBackground);
         return view;
     }
 
@@ -48,23 +61,26 @@ public class ActivityTool {
      * @return
      */
     public static boolean showLoading(Activity activity, View view) {
-        boolean viewIsGroup = false;
-        try {
-            ViewGroup vg = (ViewGroup) view;
-            viewIsGroup = true;
-        } catch (Exception e) {
+        return showLoading(activity, view, true);
+    }
+
+    /**
+     * add loading view to activity
+     *
+     * @param activity
+     * @param view
+     * @return
+     */
+    public static boolean showLoading(Activity activity, View view, boolean dimBackground) {
+        FrameLayout layout = new FrameLayout(activity);
+        FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(-2, -2);
+        if (dimBackground) {
+            layout.setBackgroundColor(0x88000000);
         }
-        if (viewIsGroup) {
-            view.setOnClickListener(listener);
-            return showView(activity, view, -1, -1, Gravity.CENTER);
-        } else {
-            FrameLayout layout = new FrameLayout(activity);
-            FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(-2, -2);
-            lps.gravity = Gravity.CENTER;
-            layout.addView(view, lps);
-            layout.setOnClickListener(listener);
-            return showView(activity, layout, -1, -1, Gravity.CENTER);
-        }
+        lps.gravity = Gravity.CENTER;
+        layout.addView(view, lps);
+        layout.setOnClickListener(listener);
+        return showView(activity, layout, -1, -1, Gravity.CENTER);
     }
 
     /**
