@@ -7,15 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
  * Created by youku on 15/9/14.
  */
 public class ActivityTool {
-    private static Map<String, View> map;
+    private static Map<String, WeakReference<View>> map;
     private static View.OnClickListener listener;
 
     static {
@@ -123,25 +125,46 @@ public class ActivityTool {
         FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(width, height);
         lps.gravity = gravity;
         activity.addContentView(view, lps);
-        map.put(activity.getClass().getSimpleName(), view);
+        // clear reference
+        clearEmptyReference();
+        // save reference
+        WeakReference<View> weakView = new WeakReference<View>(view);
+        map.put(activity.getClass().getSimpleName(), weakView);
+        //
         return true;
+    }
+
+    /**
+     * clear reference
+     */
+    private static void clearEmptyReference() {
+        Set<String> keys = map.keySet();
+        for (String key : keys) {
+            WeakReference<View> weakReference = map.get(key);
+            if (null != weakReference && null == weakReference.get()) {
+                map.remove(key);
+            }
+        }
     }
 
     /**
      * remove view from activity
      */
     public static boolean dismiss(Activity activity) {
-        View view = map.remove(activity.getClass().getSimpleName());
+        WeakReference<View> weakView = map.remove(activity.getClass().getSimpleName());
+        if (null == weakView) return false;
+        //
+        View view = weakView.get();
+        // view未被回收
         if (null != view) {
             View parent = (View) view.getParent();
             if (null != parent)
                 try {
                     ViewGroup parentGroup = (ViewGroup) parent;
                     parentGroup.removeView(view);
-                    return true;
                 } catch (Exception e) {
                 }
         }
-        return false;
+        return true;
     }
 }

@@ -7,14 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by youku on 15/9/18.
  */
 public class FragmentV4Tool {
-    private static Map<String, View> map;
+    private static Map<String, WeakReference<View>> map;
     private static View.OnClickListener listener;
 
     static {
@@ -118,9 +120,7 @@ public class FragmentV4Tool {
      */
     public static boolean showView(Fragment fragment, View view, int width, int height, int gravity) {
         dismiss(fragment);
-        if (map.size() > 2) {
-            map.clear();
-        }
+        //
         View parent = fragment.getView();
         if (parent == null) {
             return false;
@@ -130,11 +130,28 @@ public class FragmentV4Tool {
             FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(width, height);
             lps.gravity = gravity;
             layout.addView(view, lps);
-            map.put(fragment.getClass().getSimpleName(), view);
+            // clear reference
+            clearEmptyReference();
+            // save reference
+            WeakReference<View> weakView = new WeakReference<View>(view);
+            map.put(fragment.getClass().getSimpleName(), weakView);
         } catch (Exception e) {
             throw new IllegalStateException("Fragment's view must be FrameLayout or FrameLayout's subclass");
         }
         return true;
+    }
+
+    /**
+     * clear reference
+     */
+    private static void clearEmptyReference() {
+        Set<String> keys = map.keySet();
+        for (String key : keys) {
+            WeakReference<View> weakReference = map.get(key);
+            if (null != weakReference && null == weakReference.get()) {
+                map.remove(key);
+            }
+        }
     }
 
     /**
@@ -144,8 +161,13 @@ public class FragmentV4Tool {
      */
     public static void dismiss(Fragment fragment) {
         String name = fragment.getClass().getSimpleName();
-        View view = map.remove(name);
+        WeakReference<View> weakReference = map.remove(name);
+        //
+        if (null == weakReference) return;
+        View view = weakReference.get();
+        //
         if (null == view) return;
+        // view未被回收
         try {
             ViewGroup vg = (ViewGroup) view.getParent();
             vg.removeView(view);
