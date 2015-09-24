@@ -74,15 +74,28 @@ public class ActivityTool {
      * @return
      */
     public static boolean showLoading(Activity activity, View view, boolean dimBackground) {
+        View layout = packingView(activity, view, dimBackground);
+        return showView(activity, layout, -1, -1, Gravity.CENTER);
+    }
+
+    /**
+     * packing a view to framelayout
+     *
+     * @param activity
+     * @param view
+     * @param dimBackground
+     * @return
+     */
+    private static View packingView(Activity activity, View view, boolean dimBackground) {
         FrameLayout layout = new FrameLayout(activity);
         FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(-2, -2);
+        lps.gravity = Gravity.CENTER;
+        layout.addView(view, lps);
         if (dimBackground) {
             layout.setBackgroundColor(0x88000000);
         }
-        lps.gravity = Gravity.CENTER;
-        layout.addView(view, lps);
         layout.setOnClickListener(listener);
-        return showView(activity, layout, -1, -1, Gravity.CENTER);
+        return layout;
     }
 
     /**
@@ -106,7 +119,7 @@ public class ActivityTool {
      * @return
      */
     public static boolean showEmpty(Activity activity, View view) {
-        return showView(activity, view, -2, -2, Gravity.CENTER);
+        return showView(activity, packingView(activity, view, false), -2, -2, Gravity.CENTER);
     }
 
     /**
@@ -166,5 +179,30 @@ public class ActivityTool {
                 }
         }
         return true;
+    }
+
+    /**
+     * set gravity and margin
+     *
+     * @param activity
+     * @param gravity
+     * @param leftMargin
+     * @param topMargin
+     * @param rightMargin
+     * @param bottomMargin
+     */
+    public static void setGravityAndMargins(Activity activity, int gravity, int leftMargin,
+                                            int topMargin, int rightMargin, int bottomMargin) {
+        WeakReference<View> weakReference = map.get(activity.getClass().getSimpleName());
+        if (null != weakReference) {
+            View view = weakReference.get();
+            if (null != view) {
+                view = ((FrameLayout) view).getChildAt(0);
+                FrameLayout.LayoutParams lps = (FrameLayout.LayoutParams) view.getLayoutParams();
+                lps.gravity = gravity;
+                lps.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+                view.setLayoutParams(lps);
+            }
+        }
     }
 }
