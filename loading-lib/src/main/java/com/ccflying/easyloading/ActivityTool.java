@@ -119,7 +119,7 @@ public class ActivityTool {
      * @return
      */
     public static boolean showEmpty(Activity activity, View view) {
-        return showView(activity, packingView(activity, view, false), -2, -2, Gravity.CENTER);
+        return showView(activity, packingView(activity, view, false), -1, -1, Gravity.CENTER);
     }
 
     /**

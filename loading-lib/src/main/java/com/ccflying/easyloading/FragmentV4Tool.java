@@ -118,7 +118,7 @@ public class FragmentV4Tool {
      * @return
      */
     public static boolean showEmpty(Fragment fragment, View view) {
-        return showView(fragment, packingView(fragment, view, false), -2, -2, Gravity.CENTER);
+        return showView(fragment, packingView(fragment, view, false), -1, -1, Gravity.CENTER);
     }
 
     /**
