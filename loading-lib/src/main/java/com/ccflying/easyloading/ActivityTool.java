@@ -74,7 +74,7 @@ public class ActivityTool {
      * @return
      */
     public static boolean showLoading(Activity activity, View view, boolean dimBackground) {
-        View layout = packingView(activity, view, dimBackground);
+        View layout = packingView(activity, view, dimBackground, true);
         return showView(activity, layout, -1, -1, Gravity.CENTER);
     }
 
@@ -86,7 +86,7 @@ public class ActivityTool {
      * @param dimBackground
      * @return
      */
-    private static View packingView(Activity activity, View view, boolean dimBackground) {
+    private static View packingView(Activity activity, View view, boolean dimBackground, boolean interceptTouch) {
         FrameLayout layout = new FrameLayout(activity);
         FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(-2, -2);
         lps.gravity = Gravity.CENTER;
@@ -94,7 +94,9 @@ public class ActivityTool {
         if (dimBackground) {
             layout.setBackgroundColor(0x88000000);
         }
-        layout.setOnClickListener(listener);
+        if (interceptTouch) {
+            layout.setOnClickListener(listener);
+        }
         return layout;
     }
 
@@ -119,7 +121,7 @@ public class ActivityTool {
      * @return
      */
     public static boolean showEmpty(Activity activity, View view) {
-        return showView(activity, packingView(activity, view, false), -1, -1, Gravity.CENTER);
+        return showView(activity, packingView(activity, view, false, false), -1, -1, Gravity.CENTER);
     }
 
     /**

@@ -73,7 +73,7 @@ public class FragmentTool {
      * @return
      */
     public static boolean showLoading(Fragment fragment, View view, boolean dimBackground) {
-        View layout = packingView(fragment, view, dimBackground);
+        View layout = packingView(fragment, view, dimBackground, true);
         return showView(fragment, layout, -1, -1, Gravity.CENTER);
     }
 
@@ -85,7 +85,7 @@ public class FragmentTool {
      * @param dimBackground
      * @return
      */
-    private static View packingView(Fragment fragment, View view, boolean dimBackground) {
+    private static View packingView(Fragment fragment, View view, boolean dimBackground, boolean interceptTouch) {
         FrameLayout layout = new FrameLayout(fragment.getActivity());
         FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(-2, -2);
         lps.gravity = Gravity.CENTER;
@@ -93,7 +93,9 @@ public class FragmentTool {
         if (dimBackground) {
             layout.setBackgroundColor(0x88000000);
         }
-        layout.setOnClickListener(listener);
+        if (interceptTouch) {
+            layout.setOnClickListener(listener);
+        }
         return layout;
     }
 
@@ -118,7 +120,7 @@ public class FragmentTool {
      * @return
      */
     public static boolean showEmpty(Fragment fragment, View view) {
-        return showView(fragment, packingView(fragment, view, false), -1, -1, Gravity.CENTER);
+        return showView(fragment, packingView(fragment, view, false, false), -1, -1, Gravity.CENTER);
     }
 
     /**
