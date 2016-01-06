@@ -16,16 +16,13 @@
         android:layout_height="wrap_content"
         android:text="Show Loading View With Text" />
 
-    <TextView
+    <Button
+        android:id="@+id/showLoading4ViewPager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#80000000"
-        android:padding="12dp"
-        android:text="Scrolling at the horizontal direction to check the difference" />
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+        android:text="Show Loading View In ViewPager with Fragment" />
+    <!--<fragment-->
+    <!--class="com.ccflying.loadingdemo.Fragment1"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent" />-->
 </LinearLayout>

@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Created by youku on 15/9/14.
  */
-public class ActivityTool {
+public class ActivityLoading {
     private static Map<String, WeakReference<View>> map;
     private static View.OnClickListener listener;
 
@@ -84,6 +84,7 @@ public class ActivityTool {
      * @param activity
      * @param view
      * @param dimBackground
+     * @param interceptTouch
      * @return
      */
     private static View packingView(Activity activity, View view, boolean dimBackground, boolean interceptTouch) {

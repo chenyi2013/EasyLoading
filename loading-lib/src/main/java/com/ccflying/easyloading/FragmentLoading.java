@@ -1,11 +1,14 @@
 package com.ccflying.easyloading;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -15,7 +18,7 @@ import java.util.Set;
 /**
  * Created by youku on 15/9/18.
  */
-public class FragmentV4Tool {
+public class FragmentLoading {
     private static Map<String, WeakReference<View>> map;
     private static View.OnClickListener listener;
 
@@ -29,7 +32,7 @@ public class FragmentV4Tool {
     }
 
     /**
-     * show loading
+     * show loading view
      *
      * @param fragment
      * @param layoutId
@@ -42,7 +45,7 @@ public class FragmentV4Tool {
     }
 
     /**
-     * show loading
+     * show loading view
      *
      * @param fragment
      * @param layoutId
@@ -55,7 +58,7 @@ public class FragmentV4Tool {
     }
 
     /**
-     * show loading
+     * show loading view
      *
      * @param fragment
      * @param view
@@ -66,7 +69,7 @@ public class FragmentV4Tool {
     }
 
     /**
-     * show loading
+     * show loading view
      *
      * @param fragment
      * @param view
@@ -78,7 +81,7 @@ public class FragmentV4Tool {
     }
 
     /**
-     * packing a view to framelayout
+     * packing a view to FrameLayout
      *
      * @param fragment
      * @param view
@@ -87,6 +90,7 @@ public class FragmentV4Tool {
      */
     private static View packingView(Fragment fragment, View view, boolean dimBackground, boolean interceptTouch) {
         FrameLayout layout = new FrameLayout(fragment.getActivity());
+        // view's LayoutParams
         FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(-2, -2);
         lps.gravity = Gravity.CENTER;
         layout.addView(view, lps);
@@ -100,7 +104,7 @@ public class FragmentV4Tool {
     }
 
     /**
-     * show empty
+     * show empty view
      *
      * @param fragment
      * @param layoutId
@@ -113,7 +117,7 @@ public class FragmentV4Tool {
     }
 
     /**
-     * show empty
+     * show empty view
      *
      * @param fragment
      * @param view
@@ -140,7 +144,8 @@ public class FragmentV4Tool {
         if (parent == null) {
             return false;
         }
-        try {
+        // FrameLayout
+        if (parent instanceof FrameLayout) {
             FrameLayout layout = (FrameLayout) parent;
             FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(width, height);
             lps.gravity = gravity;
@@ -150,10 +155,10 @@ public class FragmentV4Tool {
             // save reference
             WeakReference<View> weakView = new WeakReference<View>(view);
             map.put(fragment.getClass().getSimpleName(), weakView);
-        } catch (Exception e) {
-            throw new IllegalStateException("Fragment's view must be FrameLayout or FrameLayout's subclass");
+            return true;
         }
-        return true;
+        throw new IllegalStateException("Fragment's rootView(Fragment#getView()) must be FrameLayout " +
+                "or FrameLayout's subclass");
     }
 
     /**
@@ -207,10 +212,13 @@ public class FragmentV4Tool {
             View view = weakReference.get();
             if (null != view) {
                 view = ((FrameLayout) view).getChildAt(0);
-                FrameLayout.LayoutParams lps = (FrameLayout.LayoutParams) view.getLayoutParams();
-                lps.gravity = gravity;
-                lps.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
-                view.setLayoutParams(lps);
+                ViewGroup.LayoutParams tmpLps = view.getLayoutParams();
+                if (tmpLps instanceof FrameLayout.LayoutParams) {
+                    FrameLayout.LayoutParams lps = (FrameLayout.LayoutParams) tmpLps;
+                    lps.gravity = gravity;
+                    lps.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+                    view.setLayoutParams(lps);
+                }
             }
         }
     }
