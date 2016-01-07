@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,7 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }, 1500);
         } else if (v.getId() == R.id.showLoadingMulti) {
-            ActivityLoading.showLoading(this, R.layout.activity_loading_withtext);
+            View view = ActivityLoading.showLoading(this, R.layout.activity_loading_withtext, false, true, null);
+            view.setBackgroundResource(R.drawable.loading_9);
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -45,6 +47,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(new Intent(this, ViewPagerActivity.class));
         }
     }
-
-
 }

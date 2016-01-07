@@ -5,6 +5,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
 import java.lang.ref.WeakReference;
@@ -19,6 +21,7 @@ import java.util.Set;
 public class ActivityLoading {
     private static Map<String, WeakReference<View>> map;
     private static View.OnClickListener listener;
+    private static int viewTag = 2131492143;
 
     static {
         map = new HashMap<>();
@@ -38,7 +41,7 @@ public class ActivityLoading {
      */
     public static View showLoading(Activity activity, int layoutId) {
         View view = LayoutInflater.from(activity).inflate(layoutId, null);
-        showLoading(activity, view, true);
+        showLoading(activity, view, true, true, null);
         return view;
     }
 
@@ -49,9 +52,9 @@ public class ActivityLoading {
      * @param layoutId
      * @return
      */
-    public static View showLoading(Activity activity, int layoutId, boolean dimBackground) {
+    public static View showLoading(Activity activity, int layoutId, boolean dimBackground, boolean showAnimation, Animation anim) {
         View view = LayoutInflater.from(activity).inflate(layoutId, null);
-        showLoading(activity, view, dimBackground);
+        showLoading(activity, view, dimBackground, showAnimation, anim);
         return view;
     }
 
@@ -63,7 +66,7 @@ public class ActivityLoading {
      * @return
      */
     public static boolean showLoading(Activity activity, View view) {
-        return showLoading(activity, view, true);
+        return showLoading(activity, view, true, true, null);
     }
 
     /**
@@ -73,8 +76,20 @@ public class ActivityLoading {
      * @param view
      * @return
      */
-    public static boolean showLoading(Activity activity, View view, boolean dimBackground) {
+    public static boolean showLoading(Activity activity, View view, boolean dimBackground, boolean showAnimation, Animation anim) {
         View layout = packingView(activity, view, dimBackground, true);
+        if (showAnimation) {
+            if (null == anim) {
+                anim = LoadingAnimations.getShowingAnimation();
+            }
+            if (dimBackground) {
+                layout.startAnimation(anim);
+                layout.setTag(viewTag, 0);
+            } else {
+                view.startAnimation(anim);
+                layout.setTag(viewTag, 1);
+            }
+        }
         return showView(activity, layout, -1, -1, Gravity.CENTER);
     }
 
@@ -136,7 +151,7 @@ public class ActivityLoading {
      * @return
      */
     public static boolean showView(Activity activity, View view, int width, int height, int gravity) {
-        dismiss(activity);
+        dismiss(activity, true, null);
         //
         FrameLayout.LayoutParams lps = new FrameLayout.LayoutParams(width, height);
         lps.gravity = gravity;
@@ -165,22 +180,53 @@ public class ActivityLoading {
 
     /**
      * remove view from activity
+     *
+     * @param activity
+     * @return
      */
     public static boolean dismiss(Activity activity) {
+        return dismiss(activity, true, null);
+    }
+
+    /**
+     * remove view from activity
+     *
+     * @param activity
+     * @param showAnim
+     * @param anim
+     * @return
+     */
+    public static boolean dismiss(Activity activity, boolean showAnim, Animation anim) {
         WeakReference<View> weakView = map.remove(activity.getClass().getSimpleName());
         if (null == weakView) return false;
         //
-        View view = weakView.get();
+        final View view = weakView.get();
+        if (null == view) return true;
         // view未被回收
-        if (null != view) {
-            View parent = (View) view.getParent();
-            if (null != parent)
-                try {
-                    ViewGroup parentGroup = (ViewGroup) parent;
+        ViewParent parent = view.getParent();
+        if (null != parent)
+            try {
+                final ViewGroup parentGroup = (ViewGroup) parent;
+                view.setOnClickListener(null);
+                Object tag = view.getTag(viewTag);
+                if (null == tag || !showAnim) {
                     parentGroup.removeView(view);
-                } catch (Exception e) {
+                    return true;
                 }
-        }
+                if (null == anim) anim = LoadingAnimations.getDismissingAnimation();
+                if (tag == 0) {
+                    view.startAnimation(anim);
+                } else if (view instanceof FrameLayout && ((FrameLayout) view).getChildCount() > 0) {
+                    ((FrameLayout) view).getChildAt(0).startAnimation(anim);
+                }
+                parentGroup.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        parentGroup.removeView(view);
+                    }
+                }, Math.abs(anim.getDuration() - 20));
+            } catch (Exception e) {
+            }
         return true;
     }
 

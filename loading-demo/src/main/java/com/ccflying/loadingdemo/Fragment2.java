@@ -51,7 +51,7 @@ public class Fragment2 extends Fragment {
                 Toast.makeText(getActivity(), "Loading Failure", Toast.LENGTH_SHORT).show();
                 showEmptyRetry();
             }
-        }, 2000);
+        }, 1500);
     }
 
     private void showEmptyRetry() {

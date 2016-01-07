@@ -29,14 +29,14 @@ public class Fragment1 extends LoadingSupportFragment implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.showLoadingWithDim) {
-            FragmentLoading.showLoading(this, R.layout.fragment_simple_loading, true);
+            FragmentLoading.showLoading(this, R.layout.fragment_simple_loading, true, true, null);
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     FragmentLoading.dismiss(Fragment1.this);
                     Toast.makeText(getActivity(), "Loading over", Toast.LENGTH_SHORT).show();
                 }
-            }, 2000);
+            }, 1500);
         } else {
             FragmentLoading.showLoading(this, R.layout.fragment_simple_loading);
             handler.postDelayed(new Runnable() {
@@ -45,7 +45,7 @@ public class Fragment1 extends LoadingSupportFragment implements View.OnClickLis
                     FragmentLoading.dismiss(Fragment1.this);
                     Toast.makeText(getActivity(), "Loading over", Toast.LENGTH_SHORT).show();
                 }
-            }, 2000);
+            }, 1500);
         }
     }
 
