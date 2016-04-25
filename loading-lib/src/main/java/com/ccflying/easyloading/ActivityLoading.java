@@ -10,7 +10,9 @@ import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -170,7 +172,9 @@ public class ActivityLoading {
      */
     private static void clearEmptyReference() {
         Set<String> keys = map.keySet();
-        for (String key : keys) {
+        List<String> list = new ArrayList<>();
+        list.addAll(keys);
+        for (String key : list) {
             WeakReference<View> weakReference = map.get(key);
             if (null != weakReference && null == weakReference.get()) {
                 map.remove(key);
